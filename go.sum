@@ -1,5 +1,7 @@
 github.com/Maruqes/Tokenize v0.2.5 h1:2fnioAj6hQFPD7A4yp+bSPv5giGpe8cPb9qYzvrKe1U=
 github.com/Maruqes/Tokenize v0.2.5/go.mod h1:6XApxF7h7zqIz9VmclMxyEQscXdFCUajhSo2GzGpfrM=
+github.com/Maruqes/Tokenize v0.2.7 h1:+40qKgEC/oYwXFG/0GMWJxljUMg1m6+kI1HF+h0JyTI=
+github.com/Maruqes/Tokenize v0.2.7/go.mod h1:6XApxF7h7zqIz9VmclMxyEQscXdFCUajhSo2GzGpfrM=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=

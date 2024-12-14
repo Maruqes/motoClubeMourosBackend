@@ -21,6 +21,10 @@ func testPago(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Não Logado"))
 		return
 	}
+	if val, err := login.IsUserActiveRequest(r); err != nil || !val {
+		w.Write([]byte("Não Ativo"))
+		return
+	}
 	w.Write([]byte("Pago"))
 }
 
