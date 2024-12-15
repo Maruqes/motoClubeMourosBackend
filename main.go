@@ -33,5 +33,5 @@ func main() {
 	http.HandleFunc("/logado", testLogado)
 	http.HandleFunc("/pago", testPago)
 
-	Tokenize.Init("4242", "/sucess", "/cancel", types.TypeOfSubscriptionValues.Normal, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
+	Tokenize.Init("10951", "/sucess", "/cancel", types.TypeOfSubscriptionValues.Normal, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
 }
