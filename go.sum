@@ -2,6 +2,8 @@ github.com/Maruqes/Tokenize v0.2.5 h1:2fnioAj6hQFPD7A4yp+bSPv5giGpe8cPb9qYzvrKe1
 github.com/Maruqes/Tokenize v0.2.5/go.mod h1:6XApxF7h7zqIz9VmclMxyEQscXdFCUajhSo2GzGpfrM=
 github.com/Maruqes/Tokenize v0.2.7 h1:+40qKgEC/oYwXFG/0GMWJxljUMg1m6+kI1HF+h0JyTI=
 github.com/Maruqes/Tokenize v0.2.7/go.mod h1:6XApxF7h7zqIz9VmclMxyEQscXdFCUajhSo2GzGpfrM=
+github.com/Maruqes/Tokenize v0.2.9 h1:Hzf9/xHev789snI/EvV6DbZ3V17ze8fai6FqXuSArfQ=
+github.com/Maruqes/Tokenize v0.2.9/go.mod h1:/6JDrNYAMhvg31WL6oduopztrQMTM67pju8ilTubuE4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
@@ -10,6 +12,8 @@ github.com/joho/godotenv v1.5.1/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwA
 github.com/mattn/go-sqlite3 v1.14.24 h1:tpSp2G2KyMnnQu99ngJ47EIkWVmliIizyZBfPrBWDRM=
 github.com/mattn/go-sqlite3 v1.14.24/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/rs/cors v1.11.1 h1:eU3gRzXLRK57F5rKMGMZURNdIG4EoAmX8k94r9wXWHA=
+github.com/rs/cors v1.11.1/go.mod h1:XyqrcTp5zjWr1wsJ8PIRZssZ8b/WMcMf71DJnit4EMU=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stripe/stripe-go/v81 v81.0.0 h1:7xqKVXIjhFoSEUzXXPON7oYFRupOyhDG5R7tRVyrgeE=
