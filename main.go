@@ -10,7 +10,7 @@ import (
 
 func testLogado(w http.ResponseWriter, r *http.Request) {
 	if !login.CheckToken(r) {
-		w.Write([]byte("Não Logadoo"))
+		w.Write([]byte("Não Logado"))
 		return
 	}
 	w.Write([]byte("Logado"))
