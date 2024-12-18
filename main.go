@@ -25,7 +25,7 @@ func testPago(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Não Ativo"))
 		return
 	}
-	w.Write([]byte("Pago"))
+	w.Write([]byte("Pago."))
 }
 
 func main() {
