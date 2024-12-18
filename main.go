@@ -13,7 +13,7 @@ func testLogado(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Não Logado."))
 		return
 	}
-	w.Write([]byte("Logado"))
+	w.Write([]byte("Logado."))
 }
 
 func testPago(w http.ResponseWriter, r *http.Request) {
