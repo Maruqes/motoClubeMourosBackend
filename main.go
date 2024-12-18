@@ -10,7 +10,7 @@ import (
 
 func testLogado(w http.ResponseWriter, r *http.Request) {
 	if !login.CheckToken(r) {
-		w.Write([]byte("Não Logado"))
+		w.Write([]byte("Não Logado funfa"))
 		return
 	}
 	w.Write([]byte("Logado"))
@@ -18,7 +18,7 @@ func testLogado(w http.ResponseWriter, r *http.Request) {
 
 func testPago(w http.ResponseWriter, r *http.Request) {
 	if !login.CheckToken(r) {
-		w.Write([]byte("Não Logado"))
+		w.Write([]byte("Não Logadofunfa"))
 		return
 	}
 	if val, err := login.IsUserActiveRequest(r); err != nil || !val {
