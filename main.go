@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/Maruqes/Tokenize"
 	funchooks "github.com/Maruqes/Tokenize/FuncHooks"
+	functions "github.com/Maruqes/Tokenize/Functions"
 	login "github.com/Maruqes/Tokenize/Login"
 	types "github.com/Maruqes/Tokenize/Types"
 	"github.com/Maruqes/Tokenize/UserFuncs"
@@ -43,13 +45,20 @@ func checkIfUserHasLatePayments(id int) (bool, error) {
 		return false, nil
 	}
 
-	timeNow := time.Now().Unix()
 	timeDB := time.Date(endDate.Year, time.Month(endDate.Month), endDate.Day, 0, 0, 0, 0, time.UTC).Unix()
+	mourosDate, _ := functions.GetMourosStartingDate()
 
-	if timeDB+(365*24*60*60) < timeNow {
+	timeDB = time.Date(time.Now().Year()-2, mourosDate.Month(), mourosDate.Day(), 0, 0, 0, 0, time.UTC).Unix()
+
+	//ultimo mouros date que passou
+	lastMourosDate := time.Date(time.Now().Year(), mourosDate.Month(), mourosDate.Day(), 0, 0, 0, 0, time.UTC).Unix()
+	yearDifference := time.Unix(timeDB, 0).Year() - time.Unix(lastMourosDate, 0).Year()
+	fmt.Println("yearDifference: ", yearDifference)
+
+	if yearDifference > 0 {
 		return true, nil
 	}
-
+	
 	return false, nil
 }
 
@@ -59,6 +68,22 @@ func checkIfUserHasLatePaymentsRequest(w http.ResponseWriter, r *http.Request) b
 }
 
 func main() {
+	Tokenize.Initialize()
+
+	date, err := functions.GetMourosStartingDate()
+	if err != nil {
+		fmt.Println("Error getting mouros date")
+		return
+
+	}
+	fmt.Println("Mouros date: ", date)
+
+	res, err := checkIfUserHasLatePayments(1)
+	if err != nil {
+		fmt.Println("Error checking if user has late payments")
+		return
+	}
+	fmt.Println("User has late payments: ", res)
 
 	http.HandleFunc("/logado", testLogado)
 	http.HandleFunc("/pago", testPago)
@@ -68,5 +93,5 @@ func main() {
 	// UserFuncs.UnprohibitUser(0)
 	funchooks.SetCheckout_UserFunc(checkIfUserHasLatePaymentsRequest)
 
-	Tokenize.Init("10951", "/sucess", "/cancel", types.TypeOfSubscriptionValues.Normal, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
+	Tokenize.InitListen("4242", "/sucess", "/cancel", types.TypeOfSubscriptionValues.Normal, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
 }
