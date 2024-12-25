@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Maruqes/Tokenize"
@@ -35,35 +36,49 @@ func testPago(w http.ResponseWriter, r *http.Request) {
 }
 
 // needs to cheak all code for offline payments and user funcs
-func checkIfUserHasLatePayments(id int) (bool, error) {
+func checkIfUserHasLatePayments(id int) (bool, []int64, error) {
 	endDate, err := UserFuncs.GetEndDateForUser(id)
 	if err != nil {
-		return false, err
+		return false, []int64{}, err
 	}
 
 	if endDate == (database.Date{}) {
-		return false, nil
+		return false, []int64{}, nil
 	}
 
 	timeDB := time.Date(endDate.Year, time.Month(endDate.Month), endDate.Day, 0, 0, 0, 0, time.UTC).Unix()
+
 	mourosDate, _ := functions.GetMourosStartingDate()
-
-	timeDB = time.Date(time.Now().Year()-2, mourosDate.Month(), mourosDate.Day(), 0, 0, 0, 0, time.UTC).Unix()
-
-	//ultimo mouros date que passou
 	lastMourosDate := time.Date(time.Now().Year(), mourosDate.Month(), mourosDate.Day(), 0, 0, 0, 0, time.UTC).Unix()
+
 	yearDifference := time.Unix(timeDB, 0).Year() - time.Unix(lastMourosDate, 0).Year()
 	fmt.Println("yearDifference: ", yearDifference)
+	fmt.Println("timeDB: ", time.Unix(timeDB, 0))
+	fmt.Println("lastMourosDate: ", time.Unix(lastMourosDate, 0))
 
-	if yearDifference > 0 {
-		return true, nil
+	if yearDifference < 0 {
+		yearsLeft := []int64{}
+		for i := 0; i < -yearDifference; i++ {
+			yearsLeft = append(yearsLeft, time.Date(int(time.Unix(timeDB, 0).Year())+i, 1, 1, 0, 0, 0, 0, time.UTC).Unix())
+		}
+
+		return true, yearsLeft, nil
 	}
-	
-	return false, nil
+
+	return false, []int64{}, nil
 }
 
 func checkIfUserHasLatePaymentsRequest(w http.ResponseWriter, r *http.Request) bool {
-	//checkar se o usuario tem pagamentos em atraso se tiver retornar true, bloquear e pedir para pagar
+	res, numberOfYears, err := checkIfUserHasLatePayments(1)
+	if err != nil {
+		fmt.Println("Error checking if user has late payments")
+		return false
+	}
+	if res {
+		fmt.Println("User has late payments: ", numberOfYears)
+		w.Write([]byte("User has late payments"))
+		return true
+	}
 	return false
 }
 
@@ -74,16 +89,23 @@ func main() {
 	if err != nil {
 		fmt.Println("Error getting mouros date")
 		return
-
 	}
 	fmt.Println("Mouros date: ", date)
+	fmt.Println()
+	fmt.Println()
 
-	res, err := checkIfUserHasLatePayments(1)
+	res, numberOfYears, err := checkIfUserHasLatePayments(2)
 	if err != nil {
 		fmt.Println("Error checking if user has late payments")
-		return
 	}
-	fmt.Println("User has late payments: ", res)
+	if res {
+		for _, year := range numberOfYears {
+			fmt.Println()
+			fmt.Println(time.Unix(year, 0).Format("01/12/2006"))
+		}
+	}
+	fmt.Println()
+	fmt.Println()
 
 	http.HandleFunc("/logado", testLogado)
 	http.HandleFunc("/pago", testPago)
@@ -93,5 +115,8 @@ func main() {
 	// UserFuncs.UnprohibitUser(0)
 	funchooks.SetCheckout_UserFunc(checkIfUserHasLatePaymentsRequest)
 
-	Tokenize.InitListen("4242", "/sucess", "/cancel", types.TypeOfSubscriptionValues.Normal, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
+	if os.Getenv("DEV") == "True" {
+		http.FileServer(http.Dir("public"))
+	}
+	Tokenize.InitListen("4242", "/sucess", "/cancel", types.TypeOfSubscriptionValues.MourosSubscription, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
 }
