@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"motoClubeMourosBackend/LatePayments"
+	stripewebhook "motoClubeMourosBackend/StripeWebhook"
 	"net/http"
 	"os"
 	"time"
@@ -11,8 +13,6 @@ import (
 	functions "github.com/Maruqes/Tokenize/Functions"
 	login "github.com/Maruqes/Tokenize/Login"
 	types "github.com/Maruqes/Tokenize/Types"
-	"github.com/Maruqes/Tokenize/UserFuncs"
-	"github.com/Maruqes/Tokenize/database"
 )
 
 func testLogado(w http.ResponseWriter, r *http.Request) {
@@ -35,53 +35,6 @@ func testPago(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Pago"))
 }
 
-// needs to cheak all code for offline payments and user funcs
-func checkIfUserHasLatePayments(id int) (bool, []int64, error) {
-	endDate, err := UserFuncs.GetEndDateForUser(id)
-	if err != nil {
-		return false, []int64{}, err
-	}
-
-	if endDate == (database.Date{}) {
-		return false, []int64{}, nil
-	}
-
-	timeDB := time.Date(endDate.Year, time.Month(endDate.Month), endDate.Day, 0, 0, 0, 0, time.UTC).Unix()
-
-	mourosDate, _ := functions.GetMourosStartingDate()
-	lastMourosDate := time.Date(time.Now().Year(), mourosDate.Month(), mourosDate.Day(), 0, 0, 0, 0, time.UTC).Unix()
-
-	yearDifference := time.Unix(timeDB, 0).Year() - time.Unix(lastMourosDate, 0).Year()
-	fmt.Println("yearDifference: ", yearDifference)
-	fmt.Println("timeDB: ", time.Unix(timeDB, 0))
-	fmt.Println("lastMourosDate: ", time.Unix(lastMourosDate, 0))
-
-	if yearDifference < 0 {
-		yearsLeft := []int64{}
-		for i := 0; i < -yearDifference; i++ {
-			yearsLeft = append(yearsLeft, time.Date(int(time.Unix(timeDB, 0).Year())+i, 1, 1, 0, 0, 0, 0, time.UTC).Unix())
-		}
-
-		return true, yearsLeft, nil
-	}
-
-	return false, []int64{}, nil
-}
-
-func checkIfUserHasLatePaymentsRequest(w http.ResponseWriter, r *http.Request) bool {
-	res, numberOfYears, err := checkIfUserHasLatePayments(1)
-	if err != nil {
-		fmt.Println("Error checking if user has late payments")
-		return false
-	}
-	if res {
-		fmt.Println("User has late payments: ", numberOfYears)
-		w.Write([]byte("User has late payments"))
-		return true
-	}
-	return false
-}
-
 func main() {
 	Tokenize.Initialize()
 
@@ -94,7 +47,7 @@ func main() {
 	fmt.Println()
 	fmt.Println()
 
-	res, numberOfYears, err := checkIfUserHasLatePayments(2)
+	res, numberOfYears, err := LatePayments.CheckIfUserHasLatePayments(2)
 	if err != nil {
 		fmt.Println("Error checking if user has late payments")
 	}
@@ -113,10 +66,11 @@ func main() {
 
 	// UserFuncs.ProhibitUser(0)
 	// UserFuncs.UnprohibitUser(0)
-	funchooks.SetCheckout_UserFunc(checkIfUserHasLatePaymentsRequest)
+	funchooks.SetCheckout_UserFunc(LatePayments.CheckIfUserHasLatePaymentsRequest)
+	funchooks.SetStripeWebhook_UserFunc(stripewebhook.HandleEvents)
 
 	if os.Getenv("DEV") == "True" {
 		http.FileServer(http.Dir("public"))
 	}
-	Tokenize.InitListen("4242", "/sucess", "/cancel", types.TypeOfSubscriptionValues.MourosSubscription, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
+	Tokenize.InitListen("10951", "/sucess", "/cancel", types.TypeOfSubscriptionValues.MourosSubscription, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
 }
