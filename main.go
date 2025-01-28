@@ -1,16 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"motoClubeMourosBackend/LatePayments"
 	stripewebhook "motoClubeMourosBackend/StripeWebhook"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/Maruqes/Tokenize"
 	funchooks "github.com/Maruqes/Tokenize/FuncHooks"
-	functions "github.com/Maruqes/Tokenize/Functions"
 	login "github.com/Maruqes/Tokenize/Login"
 	types "github.com/Maruqes/Tokenize/Types"
 )
@@ -38,34 +35,14 @@ func testPago(w http.ResponseWriter, r *http.Request) {
 func main() {
 	Tokenize.Initialize()
 
-	date, err := functions.GetMourosStartingDate()
-	if err != nil {
-		fmt.Println("Error getting mouros date")
-		return
-	}
-	fmt.Println("Mouros date: ", date)
-	fmt.Println()
-	fmt.Println()
-
-	res, numberOfYears, err := LatePayments.CheckIfUserHasLatePayments(2)
-	if err != nil {
-		fmt.Println("Error checking if user has late payments")
-	}
-	if res {
-		for _, year := range numberOfYears {
-			fmt.Println()
-			fmt.Println(time.Unix(year, 0).Format("01/12/2006"))
-		}
-	}
-	fmt.Println()
-	fmt.Println()
-
 	http.HandleFunc("/logado", testLogado)
 	http.HandleFunc("/pago", testPago)
 	// http.HandleFunc("/hasLatePayments", testPago)
 
 	// UserFuncs.ProhibitUser(0)
 	// UserFuncs.UnprohibitUser(0)
+
+	//retornam true para cancelar o evento
 	funchooks.SetCheckout_UserFunc(LatePayments.CheckIfUserHasLatePaymentsRequest)
 	funchooks.SetStripeWebhook_UserFunc(stripewebhook.HandleEvents)
 

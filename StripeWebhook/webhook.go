@@ -4,6 +4,7 @@ import (
 	"github.com/stripe/stripe-go/v81"
 )
 
+// retorna true para cancelar o evento
 func HandleEvents(event stripe.Event) bool {
 
 	switch event.Type {
@@ -14,6 +15,7 @@ func HandleEvents(event stripe.Event) bool {
 	case "charge.succeeded":
 	case "invoice.created":
 	default:
+		return false
 	}
-	return true
+	return false
 }

@@ -86,6 +86,7 @@ func sendToCheckOutPaymentStripe(w http.ResponseWriter, r *http.Request, numberO
 }
 
 func CheckIfUserHasLatePaymentsRequest(w http.ResponseWriter, r *http.Request) bool {
+	//pagamentos em atraso 
 	res, numberOfYears, err := CheckIfUserHasLatePayments(1)
 	if err != nil {
 		fmt.Println("Error checking if user has late payments")
