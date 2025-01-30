@@ -3,6 +3,7 @@ package main
 import (
 	"motoClubeMourosBackend/LatePayments"
 	stripewebhook "motoClubeMourosBackend/StripeWebhook"
+	"motoClubeMourosBackend/member"
 	"net/http"
 	"os"
 
@@ -33,7 +34,30 @@ func testPago(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	Tokenize.Initialize()
+	db := Tokenize.Initialize()
+
+	member.CreateSociosTable(db)
+	member.ChangeMember(member.Member{ // Exemplo de inserção de um membro
+		ID:                "1",
+		NumeroSocio:       1,
+		Junior:            false,
+		SocioResponsavel:  "",
+		DataNascimento:    "2000-01-01",
+		DataAdesao:        "2021-01-01",
+		MembroResponsavel: "1",
+		Nome:              "João",
+		Email:             "testeemail@teste.com",
+		Telefone:          "123456789",
+		TipoSangue:        "B+",
+		Rua:               "Rua",
+		Numero:            "1",
+		Concelho:          "Concelho",
+		Distrito:          "Distrito",
+		CodPostal:         "1234-567",
+		Tipo:              "Sócio",
+		GrupoWA:           false,
+		DataInscricao:     "2021-01-02",
+	})
 
 	http.HandleFunc("/logado", testLogado)
 	http.HandleFunc("/pago", testPago)
