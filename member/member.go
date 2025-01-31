@@ -19,7 +19,6 @@ type Member struct {
 	Distrito             string
 	CodPostal            string
 	Tipo                 string
-	GrupoWA              bool
 	DataInscricao        string
 }
 

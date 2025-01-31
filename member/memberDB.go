@@ -30,7 +30,6 @@ func CreateSociosTable(dbV *sql.DB) error {
 		distrito TEXT,
 		cod_postal TEXT,
 		tipo TEXT,
-		grupo_wa INTEGER,
 		data_inscricao TEXT
 	);
 	`
@@ -81,7 +80,6 @@ func ChangeMember(member Member) error {
 			distrito = ?,
 			cod_postal = ?,
 			tipo = ?,
-			grupo_wa = ?,
 			data_inscricao = ?
 		WHERE id = ?;
 	`
@@ -104,7 +102,6 @@ func ChangeMember(member Member) error {
 		member.Distrito,
 		member.CodPostal,
 		member.Tipo,
-		boolToInt(member.GrupoWA),
 		member.DataInscricao,
 		member.ID, // Importante para identificar qual registo vamos atualizar
 	)
@@ -129,8 +126,8 @@ func InsertMember(member Member) error {
 		id, numero_socio, junior, socio_responsavel, data_nascimento, 
 		data_adesao, membro_responsavel, nome, email, telefone, tipo_sangue, 
 		rua, numero, concelho, distrito, cod_postal, tipo, 
-		grupo_wa, data_inscricao
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+		data_inscricao
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`
 
 	_, err := db.Exec(
@@ -152,7 +149,6 @@ func InsertMember(member Member) error {
 		member.Distrito,
 		member.CodPostal,
 		member.Tipo,
-		boolToInt(member.GrupoWA),
 		member.DataInscricao,
 	)
 
@@ -161,4 +157,45 @@ func InsertMember(member Member) error {
 	}
 
 	return nil
+}
+
+func GetMemberData(id string) (Member, error) {
+	var member Member
+
+	rows, err := db.Query("SELECT * FROM socios WHERE id = ?", id)
+	if err != nil {
+		fmt.Println(err)
+		return member, err
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		err = rows.Scan(
+			&member.ID,
+			&member.NumeroSocio,
+			&member.Junior,
+			&member.SocioResponsavel,
+			&member.DataNascimento,
+			&member.DataAdesao,
+			&member.MembroResponsavel,
+			&member.Nome,
+			&member.Email,
+			&member.Telefone,
+			&member.TipoSangue,
+			&member.Rua,
+			&member.Numero,
+			&member.Concelho,
+			&member.Distrito,
+			&member.CodPostal,
+			&member.Tipo,
+			&member.DataInscricao,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return member, err
+		}
+	}
+
+	return member, nil
 }
