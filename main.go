@@ -12,7 +12,28 @@ import (
 	funchooks "github.com/Maruqes/Tokenize/FuncHooks"
 	login "github.com/Maruqes/Tokenize/Login"
 	types "github.com/Maruqes/Tokenize/Types"
+	"github.com/stripe/stripe-go/v81"
+	"github.com/stripe/stripe-go/v81/checkout/session"
 )
+
+//contato sos opcional
+//ver coisas obrigatorias ou nao
+
+//criar tipo de eventos nome do tipo
+//criar perguntas dinamicamente (id, secao, pergunta, tipo de resposta, opcional ou nao)
+//resposta (id_membro, id_pergunta, resposta)
+
+/*
+//informacos do evento
+eventos-> cartaz img
+titulo
+data do evento
+numero incricoes
+preco/preço socio
+data limite
+programa do evento -> horas, descricao
+infos extra para o evento
+*/
 
 func testLogado(w http.ResponseWriter, r *http.Request) {
 	if !login.CheckToken(r) {
@@ -115,5 +136,32 @@ func main() {
 	if os.Getenv("DEV") == "True" {
 		http.FileServer(http.Dir("public"))
 	}
+
+	params := &stripe.CheckoutSessionParams{
+		PaymentMethodTypes: stripe.StringSlice([]string{
+			"card",
+			"mb_way",
+		}),
+		LineItems: []*stripe.CheckoutSessionLineItemParams{
+			&stripe.CheckoutSessionLineItemParams{
+				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+					// To accept `mb_way`, all line items must have currency: eur
+					Currency: stripe.String("eur"),
+					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
+						Name: stripe.String("T-shirt"),
+					},
+					UnitAmount: stripe.Int64(2000),
+				},
+				Quantity: stripe.Int64(1),
+			},
+		},
+		Mode:       stripe.String(string(stripe.CheckoutSessionModePayment)),
+		SuccessURL: stripe.String("https://example.com/success"),
+		CancelURL:  stripe.String("https://example.com/cancel"),
+	}
+
+	s, _ := session.New(params)
+	println(s.URL)
+
 	Tokenize.InitListen("10951", "/sucess", "/cancel", types.TypeOfSubscriptionValues.MourosSubscription, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
 }
