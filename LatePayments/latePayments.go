@@ -5,6 +5,7 @@ import (
 	"log"
 	mourosFunctions "motoClubeMourosBackend/MourosFunctions"
 	"net/http"
+	"strconv"
 	"time"
 
 	functions "github.com/Maruqes/Tokenize/Functions"
@@ -58,7 +59,7 @@ func sendToCheckOutPaymentStripe(w http.ResponseWriter, r *http.Request, numberO
 				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
 					Currency: stripe.String("eur"),
 					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
-						Name: stripe.String("Late Payments/Anos em Falta"),
+						Name: stripe.String("Tem " + strconv.Itoa(numberOfPayments) + " quotas em atraso"),
 					},
 					UnitAmount: stripe.Int64(priceOne * int64(numberOfPayments)),
 				},
@@ -86,10 +87,18 @@ func sendToCheckOutPaymentStripe(w http.ResponseWriter, r *http.Request, numberO
 }
 
 func CheckIfUserHasLatePaymentsRequest(w http.ResponseWriter, r *http.Request) bool {
-	//pagamentos em atraso 
-	res, numberOfYears, err := CheckIfUserHasLatePayments(1)
+	cookie, err := r.Cookie("id")
 	if err != nil {
-		fmt.Println("Error checking if user has late payments")
+		return false
+	}
+	id, err := strconv.Atoi(cookie.Value)
+	if err != nil {
+		return false
+	}
+
+	//pagamentos em atraso
+	res, numberOfYears, err := CheckIfUserHasLatePayments(id)
+	if err != nil {
 		return false
 	}
 	if res {
