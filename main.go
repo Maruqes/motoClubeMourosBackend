@@ -2,14 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"motoClubeMourosBackend/LatePayments"
-	stripewebhook "motoClubeMourosBackend/StripeWebhook"
 	"motoClubeMourosBackend/member"
 	"net/http"
 	"os"
 
 	"github.com/Maruqes/Tokenize"
-	funchooks "github.com/Maruqes/Tokenize/FuncHooks"
 	login "github.com/Maruqes/Tokenize/Login"
 	types "github.com/Maruqes/Tokenize/Types"
 )
@@ -61,6 +58,7 @@ func insertMemberInfo(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Não Logado"))
 		return
 	}
+
 	if val, err := login.IsUserActiveRequest(r); err != nil || !val {
 		w.Write([]byte("Não Ativo"))
 		return
@@ -126,10 +124,6 @@ func main() {
 
 	// UserFuncs.ProhibitUser(0)
 	// UserFuncs.UnprohibitUser(0)
-
-	//retornam true para cancelar o evento
-	funchooks.SetCheckout_UserFunc(LatePayments.CheckIfUserHasLatePaymentsRequest)
-	funchooks.SetStripeWebhook_UserFunc(stripewebhook.HandleEvents)
 
 	if os.Getenv("DEV") == "True" {
 		http.FileServer(http.Dir("public"))
