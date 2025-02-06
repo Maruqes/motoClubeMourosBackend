@@ -78,7 +78,7 @@ func insertMemberInfo(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ID do cookie não encontrado"))
 		return
 	}
-	if cookie.Value != m.ID {
+	if cookie.Value != m.id {
 		w.Write([]byte("ID do cookie diferente do ID do membro"))
 		return
 	}

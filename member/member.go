@@ -2,24 +2,21 @@ package member
 
 // Aqui defines a estrutura e funções auxiliares
 type Member struct {
-	ID                   string
-	NumeroSocio          int
-	Junior               bool
-	SocioResponsavel     string
-	DataNascimento       string
-	DataAdesao           string
-	MembroResponsavel    string
-	Nome                 string
-	Email                string
-	Telefone             string
-	TipoSangue           string
-	Rua                  string
-	Numero               string
-	Concelho             string
-	Distrito             string
-	CodPostal            string
-	Tipo                 string
-	DataInscricao        string
+	id                   int
+	numeroSocio          int
+	tipoMembro           string
+	dataNascimento       string
+	dataAdesao           string
+	membroResponsavel    string
+	nome                 string
+	email                string
+	telefone             string
+	tipoSangue           string
+	rua                  string
+	numeroPorta          int
+	concelho             string
+	distrito             string
+	codPostal            string
 }
 
 func boolToInt(b bool) int {

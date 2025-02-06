@@ -13,24 +13,21 @@ var db *sql.DB
 func CreateSociosTable(dbV *sql.DB) error {
 	createTableSQL := `
 	CREATE TABLE IF NOT EXISTS socios (
-		id TEXT PRIMARY KEY,
-		numero_socio INTEGER,
-		junior INTEGER,
-		socio_responsavel TEXT,
-		data_nascimento TEXT,
-		data_adesao TEXT,
-		membro_responsavel TEXT,
+		id  INTEGER PRIMARY KEY,
+		numeroSocio INTEGER,
+		tipoMembro TEXT,
+		dataNascimento TEXT,
+		dataAdesao TEXT,
+		membroResponsavel TEXT,
 		nome TEXT,
 		email TEXT,
 		telefone TEXT,
-		tipo_sangue TEXT,
+		tipoSangue TEXT,
 		rua TEXT,
-		numero TEXT,
+		numeroPorta INTEGER,
 		concelho TEXT,
 		distrito TEXT,
-		cod_postal TEXT,
-		tipo TEXT,
-		data_inscricao TEXT
+		codPostal TEXT
 	);
 	`
 	_, err := dbV.Exec(createTableSQL)
@@ -43,7 +40,7 @@ func CreateSociosTable(dbV *sql.DB) error {
 	return nil
 }
 
-func DoesMemberDataExist(id string) bool {
+func DoesMemberDataExist(id int) bool {
 	rows, err := db.Query("SELECT id FROM socios WHERE id = ?", id)
 	if err != nil {
 		fmt.Println(err)
@@ -64,46 +61,40 @@ func ChangeMember(member Member) error {
 	updateSQL := `
 		UPDATE socios
 		SET 
-			numero_socio = ?,
-			junior = ?,
-			socio_responsavel = ?,
-			data_nascimento = ?,
-			data_adesao = ?,
-			membro_responsavel = ?,
+			numeroSocio = ?,
+			tipoMembro = ?,
+			dataNascimento = ?,
+			dataAdesao = ?,
+			membroResponsavel = ?,
 			nome = ?,
 			email = ?,
 			telefone = ?,
-			tipo_sangue = ?,
+			tipoSangue = ?,
 			rua = ?,
-			numero = ?,
+			numeroPorta INT= ?,
 			concelho = ?,
 			distrito = ?,
-			cod_postal = ?,
-			tipo = ?,
-			data_inscricao = ?
+			codPostal = ?
 		WHERE id = ?;
 	`
 
 	_, err := db.Exec(
 		updateSQL,
-		member.NumeroSocio,
-		boolToInt(member.Junior),
-		member.SocioResponsavel,
-		member.DataNascimento,
-		member.DataAdesao,
-		member.MembroResponsavel,
-		member.Nome,
-		member.Email,
-		member.Telefone,
-		member.TipoSangue,
-		member.Rua,
-		member.Numero,
-		member.Concelho,
-		member.Distrito,
-		member.CodPostal,
-		member.Tipo,
-		member.DataInscricao,
-		member.ID, // Importante para identificar qual registo vamos atualizar
+		member.numeroSocio,
+		member.tipoMembro,
+		member.dataNascimento,
+		member.dataAdesao,
+		member.membroResponsavel,
+		member.nome,
+		member.email,
+		member.telefone,
+		member.tipoSangue,
+		member.rua,
+		member.numeroPorta,
+		member.concelho,
+		member.distrito,
+		member.codPostal,
+		member.id, // Importante para identificar qual registo vamos atualizar
 	)
 
 	if err != nil {
@@ -116,40 +107,36 @@ func ChangeMember(member Member) error {
 // Função para inserir um Member na tabela 'socios'
 func InsertMember(member Member) error {
 
-	if DoesMemberDataExist(member.ID) {
+	if DoesMemberDataExist(member.id) {
 		ChangeMember(member)
 		return nil
 	}
 
 	insertSQL := `
 	INSERT INTO socios (
-		id, numero_socio, junior, socio_responsavel, data_nascimento, 
-		data_adesao, membro_responsavel, nome, email, telefone, tipo_sangue, 
-		rua, numero, concelho, distrito, cod_postal, tipo, 
-		data_inscricao
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+		id, numeroSocio, tipoMembro, dataNascimento, 
+		dataAdesao, membroResponsavel, nome, email, telefone, tipoSangue, 
+		rua, numeroPorta, concelho, distrito, codigoPostal
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`
 
 	_, err := db.Exec(
 		insertSQL,
-		member.ID,
-		member.NumeroSocio,
-		boolToInt(member.Junior),
-		member.SocioResponsavel,
-		member.DataNascimento,
-		member.DataAdesao,
-		member.MembroResponsavel,
-		member.Nome,
-		member.Email,
-		member.Telefone,
-		member.TipoSangue,
-		member.Rua,
-		member.Numero,
-		member.Concelho,
-		member.Distrito,
-		member.CodPostal,
-		member.Tipo,
-		member.DataInscricao,
+		member.id,
+		member.numeroSocio,
+		member.tipoMembro,
+		member.dataNascimento,
+		member.dataAdesao,
+		member.membroResponsavel,
+		member.nome,
+		member.email,
+		member.telefone,
+		member.tipoSangue,
+		member.rua,
+		member.numeroPorta,
+		member.concelho,
+		member.distrito,
+		member.codPostal,
 	)
 
 	if err != nil {
@@ -172,24 +159,21 @@ func GetMemberData(id string) (Member, error) {
 
 	if rows.Next() {
 		err = rows.Scan(
-			&member.ID,
-			&member.NumeroSocio,
-			&member.Junior,
-			&member.SocioResponsavel,
-			&member.DataNascimento,
-			&member.DataAdesao,
-			&member.MembroResponsavel,
-			&member.Nome,
-			&member.Email,
-			&member.Telefone,
-			&member.TipoSangue,
-			&member.Rua,
-			&member.Numero,
-			&member.Concelho,
-			&member.Distrito,
-			&member.CodPostal,
-			&member.Tipo,
-			&member.DataInscricao,
+			&member.id,
+			&member.numeroSocio,
+			&member.tipoMembro,
+			&member.dataNascimento,
+			&member.dataAdesao,
+			&member.membroResponsavel,
+			&member.nome,
+			&member.email,
+			&member.telefone,
+			&member.tipoSangue,
+			&member.rua,
+			&member.numeroPorta,
+			&member.concelho,
+			&member.distrito,
+			&member.codPostal,
 		)
 		if err != nil {
 			fmt.Println(err)
