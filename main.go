@@ -1,14 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"motoClubeMourosBackend/member"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Maruqes/Tokenize"
 	login "github.com/Maruqes/Tokenize/Login"
-	types "github.com/Maruqes/Tokenize/Types"
 )
 
 //contato sos opcional
@@ -38,77 +37,31 @@ func testLogado(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Logado"))
 }
 
-func testPago(w http.ResponseWriter, r *http.Request) {
+func pagarSubscricao(w http.ResponseWriter, r *http.Request) {
 	if !login.CheckToken(r) {
-		w.Write([]byte("Não Logado"))
+		w.Write([]byte("Não Logadoo"))
 		return
 	}
-	if val, err := login.IsUserActiveRequest(r); err != nil || !val {
-		w.Write([]byte("Não Ativo"))
-		return
-	}
-	w.Write([]byte("Pago"))
-}
-
-/*
-um socio pode inserir apenas a sua propria informação :D
-*/
-func insertMemberInfo(w http.ResponseWriter, r *http.Request) {
-	if !login.CheckToken(r) {
-		w.Write([]byte("Não Logado"))
-		return
-	}
-
-	if val, err := login.IsUserActiveRequest(r); err != nil || !val {
-		w.Write([]byte("Não Ativo"))
-		return
-	}
-	var m member.Member
-
-	decoder := json.NewDecoder(r.Body)
-	defer r.Body.Close()
-	if err := decoder.Decode(&m); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	w.Write([]byte("Member info received"))
-
-	cookie, err := r.Cookie("id")
+	w.Write([]byte("Pagamento"))
+	startingDate, err := getMourosStartDate()
 	if err != nil {
-		w.Write([]byte("ID do cookie não encontrado"))
-		return
+		panic(err)
 	}
-	if cookie.Value != m.id {
-		w.Write([]byte("ID do cookie diferente do ID do membro"))
-		return
-	}
-
-	member.InsertMember(m)
-}
-
-func getMemberInfo(w http.ResponseWriter, r *http.Request) {
-	if !login.CheckToken(r) {
-		w.Write([]byte("Não Logado"))
-		return
-	}
-	if val, err := login.IsUserActiveRequest(r); err != nil || !val {
-		w.Write([]byte("Não Ativo"))
-		return
-	}
-
-	cookie, err := r.Cookie("id")
+	endingDate, err := getMourosEndingDate()
 	if err != nil {
-		w.Write([]byte("ID do cookie não encontrado"))
+		panic(err)
+	}
+
+	nowDate := time.Now()
+
+	if nowDate.After(startingDate) && nowDate.Before(endingDate) {
+		pagamentoDentroDoPrazo(w, r)
+		return
+	} else {
+		pagamentoForaDoPrazo(w, r)
 		return
 	}
 
-	m, err := member.GetMemberData(cookie.Value)
-	if err != nil {
-		w.Write([]byte("Membro não encontrado"))
-		return
-	}
-
-	json.NewEncoder(w).Encode(m)
 }
 
 func main() {
@@ -117,17 +70,11 @@ func main() {
 	member.CreateSociosTable(db)
 
 	http.HandleFunc("/logado", testLogado)
-	http.HandleFunc("/pago", testPago)
-	http.HandleFunc("/insertMemberInfo", insertMemberInfo)
-	http.HandleFunc("/getMemberInfo", getMemberInfo)
-	// http.HandleFunc("/hasLatePayments", testPago)
-
-	// UserFuncs.ProhibitUser(0)
-	// UserFuncs.UnprohibitUser(0)
+	http.HandleFunc("/pagarSubcricao", pagarSubscricao)
 
 	if os.Getenv("DEV") == "True" {
 		http.FileServer(http.Dir("public"))
 	}
 
-	Tokenize.InitListen("10951", "/sucess", "/cancel", types.TypeOfSubscriptionValues.MourosSubscription, []types.ExtraPayments{types.ExtraPaymentsValues.Multibanco})
+	Tokenize.InitListen("4242", "/sucesso", "/cancelado")
 }

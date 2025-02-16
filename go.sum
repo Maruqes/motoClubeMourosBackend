@@ -36,6 +36,8 @@ github.com/Maruqes/Tokenize v0.2.29 h1:5Kitukg0vSbFceDkjtZVr8ugrIaFZ0q22YK+jwtIm
 github.com/Maruqes/Tokenize v0.2.29/go.mod h1:6XApxF7h7zqIz9VmclMxyEQscXdFCUajhSo2GzGpfrM=
 github.com/Maruqes/Tokenize v0.2.30 h1:BM9IxZM2Jfm/6Uysu7NYNW1cSIZBVMEFNKZ40uhOoNQ=
 github.com/Maruqes/Tokenize v0.2.30/go.mod h1:6XApxF7h7zqIz9VmclMxyEQscXdFCUajhSo2GzGpfrM=
+github.com/Maruqes/Tokenize v0.3.0 h1:i7ikAAm38DvD450cmT++kRiFnYAvx/QwuFbDfrdKvAs=
+github.com/Maruqes/Tokenize v0.3.0/go.mod h1:6XApxF7h7zqIz9VmclMxyEQscXdFCUajhSo2GzGpfrM=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
