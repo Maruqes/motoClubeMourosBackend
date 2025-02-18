@@ -33,14 +33,6 @@ programa do evento -> horas, descricao
 infos extra para o evento
 */
 
-func testLogado(w http.ResponseWriter, r *http.Request) {
-	if !login.CheckToken(r) {
-		w.Write([]byte("Não Logadoo"))
-		return
-	}
-	w.Write([]byte("Logado"))
-}
-
 func pagarSubscricao(w http.ResponseWriter, r *http.Request) {
 	if !login.CheckToken(r) {
 		w.Write([]byte("Não Logadoo"))
@@ -100,7 +92,6 @@ func main() {
 	StripeFunctions.SetCreateSubscriptionPageCallback(StripleHandler.PagamentoDentroDoPrazoCallBack)
 	StripeFunctions.SetOtherEventCallback(StripleHandler.HandleOtherEvents)
 
-	http.HandleFunc("/logado", testLogado)
 	http.HandleFunc("/pagarSubcricao", pagarSubscricao)
 
 	if os.Getenv("DEV") == "True" {
