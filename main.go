@@ -38,7 +38,6 @@ func pagarSubscricao(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Não Logadoo"))
 		return
 	}
-	w.Write([]byte("Pagamento"))
 
 	userId, err := login.GetIdWithRequest(r)
 	if err != nil {
@@ -84,15 +83,16 @@ func pagarSubscricao(w http.ResponseWriter, r *http.Request) {
 func main() {
 	db := Tokenize.Initialize()
 
+	checkMourosDate()
+
 	member.CreateSociosTable(db)
 	joia.CreateJoiaTable(db)
 
 	StripleHandler.SUB_PRICE_ID = StripleHandler.GetPriceId()
 
-	StripeFunctions.SetCreateSubscriptionPageCallback(StripleHandler.PagamentoDentroDoPrazoCallBack)
 	StripeFunctions.SetOtherEventCallback(StripleHandler.HandleOtherEvents)
 
-	http.HandleFunc("/pagarSubcricao", pagarSubscricao)
+	http.HandleFunc("/pagarSubscricao", pagarSubscricao)
 
 	if os.Getenv("DEV") == "True" {
 		http.FileServer(http.Dir("public"))

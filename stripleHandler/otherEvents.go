@@ -43,11 +43,8 @@ func HandleOtherEvents(event stripe.Event) {
 	switch event.Type {
 	case "customer.subscription.deleted":
 		Custumer_subscription_deleted(event)
-	case "customer.subscription.created":
-	case "customer.created":
 	case "invoice.payment_succeeded":
-	case "charge.succeeded":
-	case "invoice.created":
+		PagamentoDentroDoPrazoCallBack(event)
 	default:
 		fmt.Fprintf(os.Stderr, "Unhandled event type: %s\n", event.Type)
 		Logs.LogMessage("Unhandled event type: " + string(event.Type))

@@ -3,6 +3,7 @@ package StripleHandler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/Maruqes/Tokenize/StripeFunctions"
@@ -30,15 +31,18 @@ func activateWithInvoice(invoice stripe.Invoice) error {
 
 func PagamentoDentroDoPrazoCallBack(event stripe.Event) {
 	if event.Type != "invoice.payment_succeeded" {
+		log.Println("event is not invoice.payment_succeeded")
 		return
 	}
 
 	var invoice stripe.Invoice
 	if err := json.Unmarshal(event.Data.Raw, &invoice); err != nil {
+		log.Printf("Error parsing webhook JSON: %v\n", err)
 		return
 	}
 
-	if invoice.Subscription != nil {
+	if invoice.Subscription == nil {
+		log.Println("invoice has no subscription")
 		return
 	}
 

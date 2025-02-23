@@ -27,3 +27,22 @@ func getMourosEndingDate() (time.Time, error) {
 	return time.Parse("2/1/2006", endingDate)
 }
 
+func checkMourosDate() {
+	startingDate, err := getMourosStartDate()
+	if err != nil {
+		panic(err)
+	}
+
+	endingDate, err := getMourosEndingDate()
+	if err != nil {
+		panic(err)
+	}
+
+	nowDate := time.Now()
+
+	if nowDate.After(startingDate) && nowDate.Before(endingDate) {
+		fmt.Println("Dentro do prazo")
+	} else {
+		panic("Fora do prazo")
+	}
+}
